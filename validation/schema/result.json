@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "CXRay normalized result",
+  "type": "object",
+  "required": ["simulator", "trace", "config"],
+  "properties": {
+    "simulator": {"type": "string"},
+    "trace": {"type": "string"},
+    "config": {"type": "string"},
+    "latency_ns": {
+      "type": "object",
+      "properties": {
+        "read_mean":  {"type": ["number", "null"]},
+        "read_p50":   {"type": ["number", "null"]},
+        "read_p95":   {"type": ["number", "null"]},
+        "read_p99":   {"type": ["number", "null"]},
+        "read_p999":  {"type": ["number", "null"]},
+        "write_mean": {"type": ["number", "null"]},
+        "all_mean":   {"type": ["number", "null"]},
+        "all_p50":    {"type": ["number", "null"]},
+        "all_p99":    {"type": ["number", "null"]}
+      }
+    },
+    "bandwidth_GBps": {
+      "type": "object",
+      "properties": {
+        "read_avg":  {"type": "number"},
+        "write_avg": {"type": "number"},
+        "total_avg": {"type": "number"},
+        "read_peak": {"type": ["number", "null"]}
+      }
+    },
+    "link_utilization_avg": {"type": "number"},
+    "row_buffer_hit_rate":  {"type": "number"},
+    "wall_clock_s":         {"type": "number"},
+    "total_requests":       {"type": "integer"},
+    "notes":                {"type": "string"}
+  }
+}

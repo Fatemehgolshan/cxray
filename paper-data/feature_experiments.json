@@ -1,0 +1,148 @@
+{
+  "E1_credit": [
+    {
+      "m2s_req_limit": "disabled",
+      "mean_lat_ns": 294.88,
+      "p99_lat_ns": 349.11,
+      "credit_stall_events": 0,
+      "total_stall_ns": 0.0,
+      "stall_frac": 0.0,
+      "bw_GBps": 6.8258
+    },
+    {
+      "m2s_req_limit": 64,
+      "mean_lat_ns": 294.88,
+      "p99_lat_ns": 349.11,
+      "credit_stall_events": 0,
+      "total_stall_ns": 0.0,
+      "stall_frac": 0.0,
+      "bw_GBps": 6.8258
+    },
+    {
+      "m2s_req_limit": 32,
+      "mean_lat_ns": 294.88,
+      "p99_lat_ns": 349.11,
+      "credit_stall_events": 29980,
+      "total_stall_ns": 771762.53,
+      "stall_frac": 1.286099,
+      "bw_GBps": 6.8258
+    },
+    {
+      "m2s_req_limit": 16,
+      "mean_lat_ns": 171659.23,
+      "p99_lat_ns": 339631.92,
+      "credit_stall_events": 63984,
+      "total_stall_ns": 10971105803.15,
+      "stall_frac": 11636.147409,
+      "bw_GBps": 4.3443
+    },
+    {
+      "m2s_req_limit": 8,
+      "mean_lat_ns": 643008.32,
+      "p99_lat_ns": 1272950.97,
+      "credit_stall_events": 63992,
+      "total_stall_ns": 41137447893.05,
+      "stall_frac": 21816.886861,
+      "bw_GBps": 2.1723
+    }
+  ],
+  "E2_switch": [
+    {
+      "num_hops": 0,
+      "switch_overhead_ns": 0.0,
+      "fwd_fixed_ns": 133.0,
+      "mean_lat_ns": 235.59,
+      "p99_lat_ns": 235.73,
+      "overhead_vs_direct_ns": 0.0
+    },
+    {
+      "num_hops": 1,
+      "switch_overhead_ns": 80.0,
+      "fwd_fixed_ns": 173.0,
+      "mean_lat_ns": 315.59,
+      "p99_lat_ns": 315.73,
+      "overhead_vs_direct_ns": 80.0
+    },
+    {
+      "num_hops": 2,
+      "switch_overhead_ns": 160.0,
+      "fwd_fixed_ns": 213.0,
+      "mean_lat_ns": 395.59,
+      "p99_lat_ns": 395.73,
+      "overhead_vs_direct_ns": 160.0
+    },
+    {
+      "num_hops": 3,
+      "switch_overhead_ns": 240.0,
+      "fwd_fixed_ns": 253.0,
+      "mean_lat_ns": 475.59,
+      "p99_lat_ns": 475.73,
+      "overhead_vs_direct_ns": 240.0
+    }
+  ],
+  "E3_gim": [
+    {
+      "num_devices": 1,
+      "gim_arb_ns": 0.0,
+      "mean_lat_ns": 97195534.41,
+      "p99_lat_ns": 192446009.42,
+      "total_bw_GBps": 1.046
+    },
+    {
+      "num_devices": 2,
+      "gim_arb_ns": 10.0,
+      "mean_lat_ns": 80098716.52,
+      "p99_lat_ns": 158594240.59,
+      "total_bw_GBps": 1.2673
+    },
+    {
+      "num_devices": 4,
+      "gim_arb_ns": 10.0,
+      "mean_lat_ns": 80098716.52,
+      "p99_lat_ns": 158594240.59,
+      "total_bw_GBps": 1.2673
+    }
+  ],
+  "E4_type2": [
+    {
+      "device_type": "Type3",
+      "trace": "T2_ptr_chase",
+      "mean_lat_ns": 235.59,
+      "read_lat_ns": 235.59,
+      "write_lat_ns": 0,
+      "dcoh_overhead_ns": 0.0,
+      "bi_rtt_ns": 0.0,
+      "p99_lat_ns": 235.73
+    },
+    {
+      "device_type": "Type2",
+      "trace": "T2_ptr_chase",
+      "mean_lat_ns": 238.59,
+      "read_lat_ns": 238.59,
+      "write_lat_ns": 0,
+      "dcoh_overhead_ns": 3.0,
+      "bi_rtt_ns": 230.0,
+      "p99_lat_ns": 238.73
+    },
+    {
+      "device_type": "Type3",
+      "trace": "T6_mixed_rw",
+      "mean_lat_ns": 192.23,
+      "read_lat_ns": 193.02,
+      "write_lat_ns": 190.4,
+      "dcoh_overhead_ns": 0.0,
+      "bi_rtt_ns": 0.0,
+      "p99_lat_ns": 235.7
+    },
+    {
+      "device_type": "Type2",
+      "trace": "T6_mixed_rw",
+      "mean_lat_ns": 264.15,
+      "read_lat_ns": 196.02,
+      "write_lat_ns": 423.59,
+      "dcoh_overhead_ns": 3.0,
+      "bi_rtt_ns": 230.0,
+      "p99_lat_ns": 468.7
+    }
+  ]
+}

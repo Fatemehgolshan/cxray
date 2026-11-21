@@ -1,0 +1,18 @@
+{
+  "description": "Canonical CXL 2.0 baseline — applied to all simulators for fair comparison",
+  "pcie_gen": 5,
+  "pcie_lanes": 16,
+  "link_latency_ns": 100,
+  "controller_latency_ns": 60,
+  "dram_technology": "DDR5-4800",
+  "row_buffer_policy": "open",
+  "queue_depth": 32,
+  "ras_enabled": false,
+  "routing_mode": "HBR",
+  "link_bandwidth_GBps": 62.72,
+  "flit_size_bytes": 66,
+  "switch_latency_ns": 50,
+  "num_channels": 1,
+  "num_ranks": 2,
+  "num_banks": 16
+}

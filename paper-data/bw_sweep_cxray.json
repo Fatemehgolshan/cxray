@@ -1,0 +1,164 @@
+{
+  "R": [
+    {
+      "label": "nreq=32,bp=2000ns",
+      "bw_GBps": 0.9848,
+      "mean_lat_ns": 225.39,
+      "p99_lat_ns": 275.4
+    },
+    {
+      "label": "nreq=32,bp=1000ns",
+      "bw_GBps": 1.988,
+      "mean_lat_ns": 228.3,
+      "p99_lat_ns": 287.4
+    },
+    {
+      "label": "nreq=32,bp=600ns",
+      "bw_GBps": 3.2566,
+      "mean_lat_ns": 234.94,
+      "p99_lat_ns": 321.1
+    },
+    {
+      "label": "nreq=32,bp=350ns",
+      "bw_GBps": 5.6747,
+      "mean_lat_ns": 272.09,
+      "p99_lat_ns": 454.61
+    }
+  ],
+  "W": [
+    {
+      "label": "nreq=1,int=50000ns",
+      "bw_GBps": 0.0013,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=10000ns",
+      "bw_GBps": 0.0064,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=2000ns",
+      "bw_GBps": 0.032,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=500ns",
+      "bw_GBps": 0.128,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=100ns",
+      "bw_GBps": 0.64,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=25ns",
+      "bw_GBps": 2.5598,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=14ns",
+      "bw_GBps": 4.5707,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=1,int=7ns",
+      "bw_GBps": 9.14,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=2,int=14ns",
+      "bw_GBps": 9.1401,
+      "mean_lat_ns": 224.76,
+      "p99_lat_ns": 225.83
+    },
+    {
+      "label": "nreq=1,int=5ns",
+      "bw_GBps": 12.7944,
+      "mean_lat_ns": 223.69,
+      "p99_lat_ns": 223.7
+    },
+    {
+      "label": "nreq=3,int=14ns",
+      "bw_GBps": 13.7079,
+      "mean_lat_ns": 225.69,
+      "p99_lat_ns": 227.95
+    },
+    {
+      "label": "nreq=4,int=14ns",
+      "bw_GBps": 18.2743,
+      "mean_lat_ns": 226.88,
+      "p99_lat_ns": 230.08
+    },
+    {
+      "label": "nreq=1,int=3ns",
+      "bw_GBps": 21.3175,
+      "mean_lat_ns": 224.63,
+      "p99_lat_ns": 225.58
+    },
+    {
+      "label": "nreq=4,int=12ns",
+      "bw_GBps": 21.3175,
+      "mean_lat_ns": 227.63,
+      "p99_lat_ns": 231.58
+    },
+    {
+      "label": "nreq=5,int=14ns",
+      "bw_GBps": 22.8388,
+      "mean_lat_ns": 229.32,
+      "p99_lat_ns": 235.45
+    },
+    {
+      "label": "nreq=6,int=16ns",
+      "bw_GBps": 23.9797,
+      "mean_lat_ns": 230.98,
+      "p99_lat_ns": 237.08
+    },
+    {
+      "label": "nreq=5,int=13ns",
+      "bw_GBps": 24.5938,
+      "mean_lat_ns": 230.71,
+      "p99_lat_ns": 237.45
+    },
+    {
+      "label": "nreq=6,int=15ns",
+      "bw_GBps": 25.0453,
+      "mean_lat_ns": 2885.49,
+      "p99_lat_ns": 5488.18
+    }
+  ],
+  "M": [
+    {
+      "label": "nreq=32,bp=2000ns",
+      "bw_GBps": 0.9822,
+      "mean_lat_ns": 225.61,
+      "p99_lat_ns": 281.4
+    },
+    {
+      "label": "nreq=32,bp=1000ns",
+      "bw_GBps": 1.9563,
+      "mean_lat_ns": 229.04,
+      "p99_lat_ns": 300.4
+    },
+    {
+      "label": "nreq=32,bp=600ns",
+      "bw_GBps": 3.2705,
+      "mean_lat_ns": 238.19,
+      "p99_lat_ns": 345.35
+    },
+    {
+      "label": "nreq=32,bp=350ns",
+      "bw_GBps": 5.6833,
+      "mean_lat_ns": 301.61,
+      "p99_lat_ns": 545.12
+    }
+  ]
+}

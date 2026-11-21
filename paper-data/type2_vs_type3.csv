@@ -1,0 +1,5 @@
+device_type,trace,mean_lat_ns,read_lat_ns,write_lat_ns,dcoh_overhead_ns,bi_rtt_ns,p99_lat_ns
+Type3,T2_ptr_chase,235.59,235.59,0,0.0,0.0,235.73
+Type2,T2_ptr_chase,238.59,238.59,0,3.0,230.0,238.73
+Type3,T6_mixed_rw,192.23,193.02,190.4,0.0,0.0,235.7
+Type2,T6_mixed_rw,264.15,196.02,423.59,3.0,230.0,468.7

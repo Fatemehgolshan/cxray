@@ -1,0 +1,34 @@
+# -*- mode:python -*-
+# CXRay memory object for gem5, built out of tree:
+#   scons EXTRAS=<repo>/integrations/gem5 build/X86/gem5.opt
+# Links the static libcxray_lib.a built by the repo's CMake (default location
+# <repo>/build; override with CXRAY_BUILD=<dir>) and the
+# libconfig++ that CMake found, read from that build's CMakeCache.txt.
+import os
+import re
+
+from gem5_scons import error
+
+Import('*')
+
+repo = os.path.abspath(os.path.join(Dir('.').srcnode().abspath, '..', '..'))
+cxray_build = os.environ.get('CXRAY_BUILD',
+                             os.path.join(repo, 'build'))
+cxray_lib = os.path.join(cxray_build, 'libcxray_lib.a')
+if not os.path.exists(cxray_lib):
+    error(f"CXRayMem: {cxray_lib} not found; build libcxray first "
+          f"(cmake -S {repo} -B {cxray_build} && cmake --build {cxray_build})")
+
+libs = [File(cxray_lib)]
+cache = os.path.join(cxray_build, 'CMakeCache.txt')
+if os.path.exists(cache):
+    m = re.search(r'^LIBCONFIG_LIB:FILEPATH=(.+)$', open(cache).read(), re.M)
+    if m and 'NOTFOUND' not in m.group(1):
+        libs.append(File(m.group(1)))
+        env.Append(RPATH=[os.path.dirname(m.group(1))])
+
+env.Append(CPPPATH=[Dir(os.path.join(repo, 'src'))])
+env.Append(LIBS=libs)
+
+SimObject('CXRayMem.py', sim_objects=['CXRayMem'])
+Source('cxray_mem.cc')

@@ -1,0 +1,574 @@
+{
+  "metadata": {
+    "description": "Comprehensive CXL golden dataset from real silicon measurements (2022-2025)",
+    "last_updated": "2026-03-31",
+    "sources": [
+      "SupMario (arXiv 2409.14317): Dissecting CXL Memory Performance at Scale, 2024",
+      "Demystify (MICRO 2023): Demystifying CXL Memory with Genuine CXL-Ready Systems, arXiv 2303.15375",
+      "Mess (MICRO 2024): A Mess of Memory System Benchmarking, Simulation and Application Profiling, arXiv 2405.10170",
+      "Melody (ASPLOS 2025): Systematic CXL Memory Characterization, 10.1145/3676641.3715987",
+      "CMM-H (arXiv 2503.22017): Samsung CXL Memory Module Hybrid Prototype, 2025",
+      "CMM-B: Samsung CXL Memory Module Box white paper, 2024",
+      "DirectCXL (ATC 2022): Direct Access High-Performance Memory Disaggregation",
+      "Pond (ASPLOS 2023): CXL-Based Memory Pooling Systems for Cloud Platforms",
+      "CXLSim (BigComp 2025): Kim et al., Samsung CXL prototype",
+      "CXL-DMSim (IEEE TCAD 2026): Wang et al.",
+      "IPDPS25 (Wang et al., UC Merced): CXL memory characterization",
+      "OSDI24 MIKU: Managing Memory Tiers with CXL in Virtualized Environments",
+      "RealWorld CXL (arXiv 2405.14209): Exploring and Evaluating Real-world CXL"
+    ]
+  },
+
+  "devices": {
+    "CXL-A": {
+      "description": "ASIC CXL device (anonymized vendor, DDR4 backing)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x8",
+      "backing_dram": "128 GB DDR4",
+      "host_platform": "Intel Sapphire Rapids (SPR), DDR5",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "unloaded_latency_ns": 214,
+      "peak_bandwidth_GBps": 24,
+      "local_dram_latency_ns": 114,
+      "bw_saturation_threads": 8,
+      "p99_latency_ns": 700,
+      "benchmark": "Intel MLC"
+    },
+    "CXL-B": {
+      "description": "ASIC CXL device (anonymized vendor, DDR5 backing)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x8",
+      "backing_dram": "128 GB DDR5",
+      "host_platform": "Intel Sapphire Rapids (SPR), DDR5",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "unloaded_latency_ns": 271,
+      "peak_bandwidth_GBps": 22,
+      "local_dram_latency_ns": 114,
+      "bw_saturation_threads": 8,
+      "p99_latency_ns": 700,
+      "benchmark": "Intel MLC"
+    },
+    "CXL-C": {
+      "description": "FPGA CXL prototype (anonymized vendor, DDR4 backing)",
+      "hw_type": "FPGA",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x8",
+      "backing_dram": "16 GB DDR4",
+      "host_platform": "Intel Sapphire Rapids (SPR), DDR5",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "unloaded_latency_ns": 394,
+      "peak_bandwidth_GBps": 18,
+      "local_dram_latency_ns": 114,
+      "bw_saturation_threads": 8,
+      "p99_latency_ns": 1000,
+      "benchmark": "Intel MLC"
+    },
+    "CXL-D": {
+      "description": "ASIC CXL device x16 (anonymized vendor, dual DDR5 channels)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x16",
+      "backing_dram": "768 GB DDR5 (dual channel)",
+      "host_platform": "Intel Sapphire Rapids (SPR), DDR5",
+      "source": "SupMario (arXiv 2409.14317)",
+      "unloaded_latency_ns": 239,
+      "peak_bandwidth_GBps": 52,
+      "local_dram_latency_ns": 114,
+      "bw_saturation_threads": 8,
+      "p99_latency_ns": 700,
+      "benchmark": "Intel MLC"
+    },
+    "Samsung_CMM-H": {
+      "description": "Samsung CXL Memory Module Hybrid (FPGA-based, DRAM cache + NAND)",
+      "hw_type": "FPGA",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen4 x8",
+      "backing_dram": "16 GB DDR4-2666 cache + 1 TB NAND",
+      "host_platform": "Intel SPR, DDR5-L 122.9 ns",
+      "source": "CMM-H (arXiv 2503.22017), Samsung Research 2025",
+      "unloaded_latency_ns": 728.9,
+      "peak_bandwidth_GBps": 4.5,
+      "local_dram_latency_ns": 122.9,
+      "bw_saturation_threads": 4,
+      "benchmark": "Intel MLC v3.11b"
+    },
+    "Samsung_CMM-B": {
+      "description": "Samsung CXL Memory Module Box (8x CMM-D modules via Xconn switch)",
+      "hw_type": "ASIC+switch",
+      "cxl_version": "1.1/2.0",
+      "pcie_config": "Gen5 x8 per module",
+      "backing_dram": "8x E3.S DDR5 modules",
+      "host_platform": "Intel Emerald Rapids",
+      "source": "Samsung CMM-B white paper, AnandTech 2024",
+      "unloaded_latency_ns": 596,
+      "peak_bandwidth_GBps": 60,
+      "aggregate_bandwidth_GBps": 92,
+      "benchmark": "Intel MLC"
+    },
+    "Micron_CZ120": {
+      "description": "Micron CXL 2.0 Memory Expander (CZ120, E3.S form factor)",
+      "hw_type": "ASIC",
+      "cxl_version": "2.0",
+      "pcie_config": "Gen5 x8",
+      "backing_dram": "128-256 GB DDR5-4800",
+      "host_platform": "Intel Sapphire Rapids",
+      "source": "Micron CZ120 white paper, MICRO 2024 Mess paper (Micron model)",
+      "unloaded_latency_ns": 250,
+      "unloaded_latency_ns_range": [200, 300],
+      "peak_bandwidth_GBps": 36,
+      "bw_ratio_rw_balanced_GBps": 36,
+      "benchmark": "Intel MLC (2:1 R/W)"
+    },
+    "SKHynix_CMM-DDR5": {
+      "description": "SK Hynix CXL 2.0 Memory Module (96/128 GB DDR5)",
+      "hw_type": "ASIC",
+      "cxl_version": "2.0",
+      "pcie_config": "Gen5 x8",
+      "backing_dram": "96-128 GB DDR5 (1anm)",
+      "host_platform": "Intel Sapphire Rapids / Emerald Rapids",
+      "source": "SK Hynix press releases + ServeTheHome 2024",
+      "unloaded_latency_ns": 240,
+      "unloaded_latency_ns_range": [200, 280],
+      "peak_bandwidth_GBps": 36,
+      "benchmark": "Intel MLC"
+    },
+    "Astera_Leo": {
+      "description": "Astera Labs Leo CXL Smart Memory Controller (ASIC, CXL 1.1/2.0)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1/2.0",
+      "pcie_config": "Gen5",
+      "host_platform": "Intel Sapphire Rapids",
+      "source": "Astera Labs product + SemiAnalysis 2022 + NextPlatform",
+      "unloaded_latency_ns": 210,
+      "unloaded_latency_ns_range": [170, 250],
+      "peak_bandwidth_GBps": 36,
+      "benchmark": "Intel MLC"
+    },
+    "DirectCXL_FPGA": {
+      "description": "KAIST DirectCXL FPGA prototype (CXL 2.0, first paper)",
+      "hw_type": "FPGA",
+      "cxl_version": "2.0",
+      "pcie_config": "PCIe switch + backplane",
+      "host_platform": "Custom x86 host",
+      "source": "DirectCXL (ATC 2022), Gouk et al., KAIST",
+      "unloaded_latency_ns": 164,
+      "notes": "~328 cycles at ~2 GHz; disaggregated memory; 8.3x lower than RDMA",
+      "benchmark": "Custom cycle-count measurement"
+    },
+    "RealWorld_SysA": {
+      "description": "SK Hynix CXL / AMD EPYC 9354 (real system, x16)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x16",
+      "backing_dram": "128 GB DDR5-4800 (single channel)",
+      "host_platform": "AMD EPYC 9354, 32c, 3.8 GHz",
+      "source": "RealWorld CXL (arXiv 2405.14209)",
+      "latency_overhead_over_local_ns": 153,
+      "peak_bandwidth_GBps": 3.8,
+      "bw_saturation_threads": 8,
+      "benchmark": "Intel MLC v3.5"
+    },
+    "RealWorld_SysB": {
+      "description": "Astera Labs / Intel Xeon Platinum 8470 (real system, x16)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x16",
+      "backing_dram": "64 GB DDR5 (single channel)",
+      "host_platform": "Intel Xeon Platinum 8470, 52c, 2.0 GHz",
+      "source": "RealWorld CXL (arXiv 2405.14209)",
+      "latency_overhead_over_local_ns": 211,
+      "peak_bandwidth_GBps": 18,
+      "bw_saturation_threads": 8,
+      "benchmark": "Intel MLC v3.5"
+    },
+    "RealWorld_SysC": {
+      "description": "Montage / Intel Xeon Gold 6438Y+ (real system, x16, dual DDR5)",
+      "hw_type": "ASIC",
+      "cxl_version": "1.1",
+      "pcie_config": "Gen5 x16",
+      "backing_dram": "128 GB, dual DDR5-6200 channel",
+      "host_platform": "Intel Xeon Gold 6438Y+, 32c, 2.0 GHz",
+      "source": "RealWorld CXL (arXiv 2405.14209)",
+      "peak_bandwidth_GBps": 38.9,
+      "bw_fraction_of_local": 0.803,
+      "bw_saturation_threads": 8,
+      "benchmark": "Intel MLC v3.5"
+    }
+  },
+
+  "bw_latency_curves": {
+    "description": "Bandwidth-latency (Mess-style) curves: (BW_GBps, latency_ns) pairs as load increases",
+    "notes": "Derived from MLC injection-rate sweeps in cited papers. X=bandwidth, Y=latency.",
+    "CXL-A_ASIC_x8": {
+      "source": "SupMario (arXiv 2409.14317) Fig 3 + Table 1",
+      "hw_type": "ASIC", "cxl_version": "1.1", "pcie": "Gen5 x8",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 1.5,  "latency_ns": 214},
+        {"threads": 2,  "bw_GBps": 3.0,  "latency_ns": 216},
+        {"threads": 4,  "bw_GBps": 6.0,  "latency_ns": 220},
+        {"threads": 8,  "bw_GBps": 18.0, "latency_ns": 250},
+        {"threads": 16, "bw_GBps": 22.0, "latency_ns": 380},
+        {"threads": 31, "bw_GBps": 24.0, "latency_ns": 700}
+      ]
+    },
+    "CXL-B_ASIC_x8": {
+      "source": "SupMario (arXiv 2409.14317) Fig 3 + Table 1",
+      "hw_type": "ASIC", "cxl_version": "1.1", "pcie": "Gen5 x8",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 1.5,  "latency_ns": 271},
+        {"threads": 2,  "bw_GBps": 3.0,  "latency_ns": 274},
+        {"threads": 4,  "bw_GBps": 6.0,  "latency_ns": 280},
+        {"threads": 8,  "bw_GBps": 16.0, "latency_ns": 340},
+        {"threads": 16, "bw_GBps": 21.0, "latency_ns": 500},
+        {"threads": 31, "bw_GBps": 22.0, "latency_ns": 900}
+      ]
+    },
+    "CXL-C_FPGA_x8": {
+      "source": "SupMario (arXiv 2409.14317) Fig 3 + Table 1",
+      "hw_type": "FPGA", "cxl_version": "1.1", "pcie": "Gen5 x8",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 1.5,  "latency_ns": 394},
+        {"threads": 2,  "bw_GBps": 3.0,  "latency_ns": 400},
+        {"threads": 4,  "bw_GBps": 8.0,  "latency_ns": 430},
+        {"threads": 8,  "bw_GBps": 15.0, "latency_ns": 600},
+        {"threads": 16, "bw_GBps": 17.0, "latency_ns": 900},
+        {"threads": 31, "bw_GBps": 18.0, "latency_ns": 1200}
+      ]
+    },
+    "CXL-D_ASIC_x16": {
+      "source": "SupMario (arXiv 2409.14317) Table 1",
+      "hw_type": "ASIC", "cxl_version": "1.1", "pcie": "Gen5 x16",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 1.5,  "latency_ns": 239},
+        {"threads": 2,  "bw_GBps": 3.0,  "latency_ns": 241},
+        {"threads": 4,  "bw_GBps": 8.0,  "latency_ns": 245},
+        {"threads": 8,  "bw_GBps": 30.0, "latency_ns": 270},
+        {"threads": 16, "bw_GBps": 48.0, "latency_ns": 330},
+        {"threads": 31, "bw_GBps": 52.0, "latency_ns": 700}
+      ]
+    },
+    "Samsung_CMM-H_FPGA_Gen4": {
+      "source": "CMM-H (arXiv 2503.22017) Table III + Figure analysis",
+      "hw_type": "FPGA", "cxl_version": "1.1", "pcie": "Gen4 x8",
+      "curve": [
+        {"threads": 1, "bw_GBps": 0.5,  "latency_ns": 729},
+        {"threads": 2, "bw_GBps": 1.0,  "latency_ns": 735},
+        {"threads": 4, "bw_GBps": 3.5,  "latency_ns": 780},
+        {"threads": 8, "bw_GBps": 4.3,  "latency_ns": 1100}
+      ]
+    },
+    "LocalDDR5_SPR_baseline": {
+      "source": "SupMario (arXiv 2409.14317) Table 1 — SPR2S platform",
+      "hw_type": "DRAM_baseline", "cxl_version": "N/A", "pcie": "N/A",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 5.0,   "latency_ns": 114},
+        {"threads": 4,  "bw_GBps": 50.0,  "latency_ns": 118},
+        {"threads": 8,  "bw_GBps": 120.0, "latency_ns": 128},
+        {"threads": 16, "bw_GBps": 180.0, "latency_ns": 160},
+        {"threads": 28, "bw_GBps": 218.0, "latency_ns": 300}
+      ]
+    },
+    "RemoteNUMA_DDR5_SPR_baseline": {
+      "source": "SupMario (arXiv 2409.14317) Table 1 — SPR2S NUMA",
+      "hw_type": "NUMA_baseline", "cxl_version": "N/A", "pcie": "N/A",
+      "curve": [
+        {"threads": 1,  "bw_GBps": 2.0,  "latency_ns": 191},
+        {"threads": 4,  "bw_GBps": 20.0, "latency_ns": 195},
+        {"threads": 8,  "bw_GBps": 60.0, "latency_ns": 215},
+        {"threads": 16, "bw_GBps": 90.0, "latency_ns": 290},
+        {"threads": 28, "bw_GBps": 97.0, "latency_ns": 500}
+      ]
+    }
+  },
+
+  "data_points": [
+    {
+      "id": "G1",
+      "source": "CXL-DMSim (Wang et al., IEEE TCAD 2026)",
+      "hardware": "CXL-ASIC (in-house, CXL 1.1)",
+      "metric": "read_latency_ratio_vs_ddr",
+      "value": 2.18,
+      "notes": "average across LMbench pointer-chasing"
+    },
+    {
+      "id": "G2",
+      "source": "CXL-DMSim (Wang et al., IEEE TCAD 2026)",
+      "hardware": "CXL-FPGA (prototype, CXL 1.1)",
+      "metric": "read_latency_ratio_vs_ddr",
+      "value": 2.88,
+      "notes": ""
+    },
+    {
+      "id": "G3",
+      "source": "CXL-DMSim (Wang et al., IEEE TCAD 2026)",
+      "hardware": "CXL-ASIC",
+      "metric": "read_bandwidth_fraction_of_ddr",
+      "value_min": 0.82,
+      "value_max": 0.83,
+      "notes": "STREAM Copy benchmark"
+    },
+    {
+      "id": "G4",
+      "source": "CXL-DMSim (Wang et al., IEEE TCAD 2026)",
+      "hardware": "CXL-FPGA",
+      "metric": "read_bandwidth_fraction_of_ddr",
+      "value_min": 0.45,
+      "value_max": 0.69,
+      "notes": "STREAM Copy benchmark"
+    },
+    {
+      "id": "G5",
+      "source": "CXLSim (Kim et al., BigComp 2025)",
+      "hardware": "Samsung CXL FPGA prototype, x8 PCIe 5.0",
+      "metric": "read_latency_ns",
+      "value": 600,
+      "notes": "FPGA prototype"
+    },
+    {
+      "id": "G6",
+      "source": "CXLSim (Kim et al., BigComp 2025)",
+      "hardware": "Samsung CXL ASIC target",
+      "metric": "read_latency_ns",
+      "value_min": 170,
+      "value_max": 250,
+      "notes": "ASIC target, pointer chasing"
+    },
+    {
+      "id": "G7",
+      "source": "IPDPS25 (Wang et al., UC Merced)",
+      "hardware": "Intel Sapphire Rapids + CXL device",
+      "metric": "local_ddr_latency_ns",
+      "value_min": 80,
+      "value_max": 140,
+      "notes": "MLC pointer chasing, local DDR5"
+    },
+    {
+      "id": "G8",
+      "source": "IPDPS25 (Wang et al., UC Merced)",
+      "hardware": "CXL memory (multiple vendors)",
+      "metric": "bw_saturation_threads",
+      "value": 4,
+      "notes": "BW saturates at 4 threads; DDR saturates at >8 threads"
+    },
+    {
+      "id": "G9",
+      "source": "CXL-DMSim (Wang et al., IEEE TCAD 2026)",
+      "hardware": "CXL-ASIC",
+      "metric": "simulator_mean_error_pct",
+      "value": 3.4,
+      "notes": "CXL-DMSim average error vs silicon across all benchmarks"
+    },
+    {
+      "id": "G10",
+      "source": "IPDPS25 (Wang et al., UC Merced)",
+      "hardware": "Intel Sapphire Rapids + CXL ASIC",
+      "metric": "read_latency_ns",
+      "value_min": 170,
+      "value_max": 250,
+      "notes": "Matches G6 from different source"
+    },
+    {
+      "id": "G11",
+      "source": "Multiple sources",
+      "hardware": "CXL-ASIC (PCIe 5.0 x16)",
+      "metric": "peak_read_bandwidth_GBps",
+      "value_min": 50,
+      "value_max": 55,
+      "notes": "Measured on production CXL 1.1 expanders, x16 PCIe 5.0"
+    },
+    {
+      "id": "G12",
+      "source": "IPDPS25 (Wang et al., UC Merced)",
+      "hardware": "Intel Sapphire Rapids + CXL",
+      "metric": "stream_copy_bandwidth_GBps",
+      "value_min": 40,
+      "value_max": 55,
+      "notes": "STREAM Copy on CXL device"
+    },
+    {
+      "id": "G13",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "hardware": "ASIC CXL-A (anonymized, DDR4, Gen5 x8)",
+      "metric": "read_latency_ns",
+      "value": 214,
+      "notes": "Unloaded pointer-chase, Intel MLC, SPR host"
+    },
+    {
+      "id": "G14",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "hardware": "ASIC CXL-B (anonymized, DDR5, Gen5 x8)",
+      "metric": "read_latency_ns",
+      "value": 271,
+      "notes": "Unloaded pointer-chase, Intel MLC, SPR host"
+    },
+    {
+      "id": "G15",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "hardware": "FPGA CXL-C (anonymized, DDR4, Gen5 x8)",
+      "metric": "read_latency_ns",
+      "value": 394,
+      "notes": "Unloaded pointer-chase, Intel MLC, SPR host"
+    },
+    {
+      "id": "G16",
+      "source": "SupMario (arXiv 2409.14317)",
+      "hardware": "ASIC CXL-D (anonymized, DDR5 x16, Gen5 x16)",
+      "metric": "read_latency_ns",
+      "value": 239,
+      "notes": "Unloaded pointer-chase, Intel MLC, SPR host, 52 GB/s peak"
+    },
+    {
+      "id": "G17",
+      "source": "SupMario (arXiv 2409.14317) / Demystify (MICRO 2023)",
+      "hardware": "ASIC CXL-A, Gen5 x8",
+      "metric": "peak_read_bandwidth_GBps",
+      "value": 24,
+      "notes": "Intel MLC peak, ~8 threads to saturate"
+    },
+    {
+      "id": "G18",
+      "source": "SupMario (arXiv 2409.14317)",
+      "hardware": "ASIC CXL-D, Gen5 x16 (2-channel DDR5)",
+      "metric": "peak_read_bandwidth_GBps",
+      "value": 52,
+      "notes": "Intel MLC peak, ~8-16 threads"
+    },
+    {
+      "id": "G19",
+      "source": "Samsung CMM-H (arXiv 2503.22017)",
+      "hardware": "Samsung CXL-H FPGA prototype (Gen4 x8, DRAM cache+NAND)",
+      "metric": "read_latency_ns",
+      "value": 728.9,
+      "notes": "Median MLC pointer-chase latency; 122.9 ns local DDR5-L baseline"
+    },
+    {
+      "id": "G20",
+      "source": "Samsung CMM-B (white paper 2024)",
+      "hardware": "Samsung CMM-B (8x CMM-D + Xconn CXL switch)",
+      "metric": "read_latency_ns",
+      "value": 596,
+      "notes": "MLC 100%-read unloaded latency; 60 GB/s peak per-box BW"
+    },
+    {
+      "id": "G21",
+      "source": "Samsung CMM-B (white paper 2024)",
+      "hardware": "Samsung CMM-B box (8x CMM-D, aggregate)",
+      "metric": "peak_read_bandwidth_GBps",
+      "value": 60,
+      "notes": "Single box, 100% read; 1:1 R/W = 123 GB/s"
+    },
+    {
+      "id": "G22",
+      "source": "Astera Labs Leo + SemiAnalysis 2022 + NextPlatform",
+      "hardware": "Astera Labs Leo ASIC CXL controller, Gen5",
+      "metric": "read_latency_ns",
+      "value_min": 170,
+      "value_max": 250,
+      "notes": "MLC pointer-chase, production ASIC; closer to 250 ns in practice"
+    },
+    {
+      "id": "G23",
+      "source": "Melody (ASPLOS 2025)",
+      "hardware": "Range across 4 CXL devices (Gen5 x8 and x16, CXL 1.1)",
+      "metric": "read_latency_ns",
+      "value_min": 140,
+      "value_max": 410,
+      "notes": "Full device spread; loaded latency near saturation reaches >1 us"
+    },
+    {
+      "id": "G24",
+      "source": "SupMario (arXiv 2409.14317)",
+      "hardware": "CXL BW saturation behavior (all 4 devices)",
+      "metric": "bw_saturation_threads",
+      "value_min": 4,
+      "value_max": 8,
+      "notes": "CXL saturates at 4-8 threads; local DDR5 saturates at ~28 threads"
+    },
+    {
+      "id": "G25",
+      "source": "SupMario (arXiv 2409.14317) / OSDI24 MIKU / RealWorld CXL",
+      "hardware": "All real CXL ASIC devices (loaded latency near saturation)",
+      "metric": "loaded_latency_ns",
+      "value_min": 400,
+      "value_max": 700,
+      "notes": "Loaded latency approaching BW saturation; stable below 50% BW utilization"
+    },
+    {
+      "id": "G26",
+      "source": "SupMario / Demystify MICRO 2023 / Melody ASPLOS 2025",
+      "hardware": "All CXL devices, tail latency",
+      "metric": "p999_latency_ns",
+      "value_min": 700,
+      "value_max": 1000,
+      "notes": "p99.9 tail latency for ASIC devices; FPGA devices exceed 1 us"
+    },
+    {
+      "id": "G27",
+      "source": "SupMario (arXiv 2409.14317)",
+      "hardware": "Intel Sapphire Rapids (SPR) local DDR5 baseline",
+      "metric": "local_ddr_latency_ns",
+      "value": 114,
+      "notes": "MLC unloaded pointer-chase on SPR (4th Gen Xeon), DDR5"
+    },
+    {
+      "id": "G28",
+      "source": "Samsung CMM-H (arXiv 2503.22017)",
+      "hardware": "Intel SPR + DDR5-L local",
+      "metric": "local_ddr_latency_ns",
+      "value": 122.9,
+      "notes": "MLC unloaded pointer-chase; platform baseline for CMM-H paper"
+    },
+    {
+      "id": "G29",
+      "source": "Micron CZ120 white paper + Mess (MICRO 2024)",
+      "hardware": "Micron CZ120 CXL 2.0 (E3.S, Gen5 x8, DDR5-4800)",
+      "metric": "peak_read_bandwidth_GBps",
+      "value": 36,
+      "notes": "MLC 2:1 R/W; close to DDR5-4800 theoretical limit of 38.4 GB/s"
+    },
+    {
+      "id": "G30",
+      "source": "RealWorld CXL (arXiv 2405.14209)",
+      "hardware": "Montage/Intel Xeon Gold 6438Y+ (Gen5 x16, dual DDR5-6200)",
+      "metric": "peak_read_bandwidth_GBps",
+      "value": 38.9,
+      "notes": "80.3% of local DRAM (48.4 GB/s); best BW efficiency in study"
+    }
+  ],
+
+  "validation_targets": {
+    "T1_seq_read": {
+      "metric": "peak_read_bandwidth_GBps",
+      "target_min": 22,
+      "target_max": 63,
+      "golden_ids": ["G3", "G11", "G12", "G17", "G18", "G29", "G30"],
+      "notes": "x8 ASIC: 22-26 GB/s; x16 ASIC: 36-52 GB/s; PCIe 5x16 ceiling: 63 GB/s",
+      "tolerance_pct": 15
+    },
+    "T2_ptr_chase": {
+      "metric": "read_mean_latency_ns",
+      "target_min": 170,
+      "target_max": 410,
+      "golden_ids": ["G5", "G6", "G10", "G13", "G14", "G15", "G16", "G22", "G23"],
+      "notes": "ASIC range: 170-271 ns; FPGA range: 394-729 ns; full device spread: 140-410 ns",
+      "tolerance_pct": 15
+    },
+    "T3_depth_sweep": {
+      "metric": "read_mean_latency_ns",
+      "target_min": 170,
+      "target_max": 700,
+      "golden_ids": ["G13", "G25"],
+      "notes": "Unloaded: 214-271 ns (ASIC); loaded near saturation: 400-700 ns"
+    },
+    "T4_bw_scale": {
+      "metric": "bw_saturation_threads",
+      "target_min": 4,
+      "target_max": 8,
+      "golden_ids": ["G8", "G24"],
+      "tolerance_pct": 0,
+      "notes": "CXL saturates at 4-8 threads vs >20 for local DDR"
+    }
+  }
+}

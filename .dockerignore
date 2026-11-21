@@ -1,0 +1,6 @@
+build/
+outputs/
+artifact/work/
+validation/traces/*.trace
+__pycache__/
+*.pyc

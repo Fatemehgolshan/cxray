@@ -1,0 +1,12 @@
+build/
+.venv/
+outputs/
+artifact/outputs/
+artifact/work/
+*.pyc
+__pycache__/
+validation/traces/T*.trace
+validation/traces/calib_*.trace
+mplconfig/
+docker/pin-*.tar.gz
+logs/

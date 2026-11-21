@@ -1,0 +1,257 @@
+diff --git a/common/Makefile.common b/common/Makefile.common
+index 76bc369..612932a 100644
+--- a/common/Makefile.common
++++ b/common/Makefile.common
+@@ -56,6 +56,12 @@ LZMA_LINK_LIBS := $(if $(filter 1,$(HAVE_LZMA)),-llzma,)
+ TORCH_LINK_LIBS := $(if $(wildcard $(SIM_ROOT)/libtorch/lib/libtorch.so),-ltorch,) $(if $(wildcard $(SIM_ROOT)/libtorch/lib/libc10.so),-lc10,)
+ LD_LIBS += -ldecoder -lsift -lxed -lrt -lz -lbz2 $(LZMA_LINK_LIBS) -lsqlite3 $(PYTHON_LD_LIBS) $(TORCH_LINK_LIBS)
+ 
++# CXRay CXL memory simulator (perf_model/dram/type = cxray): headers and static library.
++# CXRAY_HOME holds (or links to) src/ and libcxray_lib.a; integrations/sniper/apply.sh sets it up.
++CXRAY_HOME ?= $(SIM_ROOT)/cxray
++CPPFLAGS += -I$(CXRAY_HOME)/src
++LD_LIBS += $(CXRAY_HOME)/libcxray_lib.a
++
+ LD_FLAGS += -L$(SIM_ROOT)/lib -L$(SIM_ROOT)/decoder_lib/ -L$(SIM_ROOT)/sift -L$(XED_HOME)/lib -L$(SIM_ROOT)/libtorch/lib
+ 
+ ifneq ($(SQLITE_PATH),)
+diff --git a/common/core/memory_subsystem/parametric_dram_directory_msi/memory_manager.cc b/common/core/memory_subsystem/parametric_dram_directory_msi/memory_manager.cc
+index da81332..29a78ca 100644
+--- a/common/core/memory_subsystem/parametric_dram_directory_msi/memory_manager.cc
++++ b/common/core/memory_subsystem/parametric_dram_directory_msi/memory_manager.cc
+@@ -57,7 +57,8 @@ namespace ParametricDramDirectoryMSI
+ 																					   m_dram_cache(NULL),
+ 																					   m_dram_directory_cntlr(NULL),
+ 																					   m_dram_cntlr(NULL),
+-																					   m_dram_cntlr_present(false)
++																					   m_dram_cntlr_present(false),
++																					   m_tag_directory_present(false)
+ 
+ 	{
+ 
+diff --git a/common/performance_model/dram_perf_model.cc b/common/performance_model/dram_perf_model.cc
+index a3a9ec4..b59a8c3 100644
+--- a/common/performance_model/dram_perf_model.cc
++++ b/common/performance_model/dram_perf_model.cc
+@@ -5,6 +5,7 @@
+ #include "dram_perf_model_normal.h"
+ #include "dram_perf_model_detailed.h"
+ #include "dram_perf_model_cxl.h"
++#include "dram_perf_model_cxray.h"
+ #include "config.hpp"
+ 
+ // Factory with explicit type parameter (for tiered memory)
+@@ -33,6 +34,10 @@ DramPerfModel* DramPerfModel::createDramPerfModel(core_id_t core_id, UInt32 cach
+    {
+       return new DramPerfModelCXL(core_id, cache_block_size, address_home_lookup, suffix);
+    }
++   else if (type == "cxray")
++   {
++      return new DramPerfModelCXRay(core_id, cache_block_size, suffix);
++   }
+    else
+    {
+       LOG_PRINT_ERROR("Invalid DRAM model type %s", type.c_str());
+diff --git a/common/performance_model/dram_perf_model_cxray.cc b/common/performance_model/dram_perf_model_cxray.cc
+new file mode 100644
+index 0000000..94885f4
+--- /dev/null
++++ b/common/performance_model/dram_perf_model_cxray.cc
+@@ -0,0 +1,147 @@
++#include "dram_perf_model_cxray.h"
++#include "simulator.h"
++#include "config.h"
++#include "config.hpp"
++#include "stats.h"
++#include "shmem_perf.h"
++#include "hooks_manager.h"
++#include "log.h"
++
++#include "cxl_mem.h"   // CXRay: cxl::CXLMemController, cxl::TraceRequest, cxl::RequestResult
++
++#include <cmath>
++#include <cstdio>
++#include <exception>
++#include <memory>
++#include <mutex>
++#include <string>
++
++namespace
++{
++   // Process-wide CXRay state: one controller, one lock, one stats dump.
++   struct CXRayShared
++   {
++      std::mutex lock;
++      std::unique_ptr<cxl::CXLMemController> ctrl;
++      UInt64 instances = 0;
++      UInt64 requests = 0;
++      bool stats_written = false;
++   };
++
++   CXRayShared& shared()
++   {
++      static CXRayShared s;
++      return s;
++   }
++
++   // HOOK_SIM_END callback: CXRay statistics to stdout and to <output_dir>/<run_tag>_stats.json.
++   SInt64 cxrayHookSimEnd(UInt64 /*arg*/, UInt64 /*unused*/)
++   {
++      CXRayShared& s = shared();
++      std::lock_guard<std::mutex> guard(s.lock);
++      if (s.ctrl && !s.stats_written)
++      {
++         s.stats_written = true;
++         printf("[CXRAY] simulation end: %lu requests through CXRay, writing statistics\n",
++                (unsigned long)s.requests);
++         fflush(stdout);
++         s.ctrl->printStats();
++         s.ctrl->writeStatsJson();
++         fflush(stdout);
++      }
++      return 0;
++   }
++}
++
++DramPerfModelCXRay::DramPerfModelCXRay(core_id_t core_id, UInt32 cache_block_size, const String& suffix)
++   : DramPerfModel(core_id, cache_block_size, suffix)
++   , m_core_id(core_id)
++   , m_total_access_latency(SubsecondTime::Zero())
++   , m_total_queueing_delay(SubsecondTime::Zero())
++{
++   CXRayShared& s = shared();
++   {
++      std::lock_guard<std::mutex> guard(s.lock);
++      if (!s.ctrl)
++      {
++         LOG_ASSERT_ERROR(Sim()->getCfg()->hasKey("perf_model/dram/cxray_config"),
++                          "perf_model/dram/type=cxray requires perf_model/dram/cxray_config=<CXRay .cfg>");
++         String path = Sim()->getCfg()->getString("perf_model/dram/cxray_config");
++         try
++         {
++            s.ctrl = std::make_unique<cxl::CXLMemController>(
++                        cxl::CXLMemController::fromConfigFile(std::string(path.c_str())));
++         }
++         catch (const std::exception& e)
++         {
++            LOG_PRINT_ERROR("CXRay: cannot build controller from %s: %s", path.c_str(), e.what());
++         }
++         const cxl::SimConfig& c = s.ctrl->config();
++         printf("[CXRAY] controller from %s: CXL %s, sim_mode %s, PCIe Gen%d x%d, DRAM backend %s, host overhead %.0f ns\n",
++                path.c_str(), c.cxlVersion.c_str(), c.simMode.c_str(), c.link.pcieGen, c.link.pcieLanes,
++                c.device.dramBackendType.c_str(), c.hostOverheadNs);
++         fflush(stdout);
++         Sim()->getHooksManager()->registerHook(HookType::HOOK_SIM_END, cxrayHookSimEnd, 0);
++      }
++      s.instances++;
++   }
++
++   // Same metric names as Sniper's own DRAM models so sim.out's "DRAM summary" reports CXRay's latency.
++   registerStatsMetric("dram" + m_suffix, core_id, "total-access-latency", &m_total_access_latency);
++   registerStatsMetric("dram" + m_suffix, core_id, "total-queueing-delay", &m_total_queueing_delay);
++}
++
++DramPerfModelCXRay::~DramPerfModelCXRay()
++{
++   CXRayShared& s = shared();
++   std::lock_guard<std::mutex> guard(s.lock);
++   s.instances--;
++}
++
++SubsecondTime
++DramPerfModelCXRay::getAccessLatency(SubsecondTime pkt_time, UInt64 pkt_size, core_id_t requester,
++                                     IntPtr address, DramCntlrInterface::access_t access_type,
++                                     ShmemPerf *perf, bool is_metadata)
++{
++   // Same gating as Sniper's own models: nothing while performance models are off (fast-forward,
++   // warmup) or for non-application requesters.
++   if ((!m_enabled) ||
++         (requester >= (core_id_t) Config::getSingleton()->getApplicationCores()))
++   {
++      return SubsecondTime::Zero();
++   }
++
++   // Sniper keeps time in femtoseconds; CXRay takes the arrival time in nanoseconds (double).
++   const double arrival_ns = static_cast<double>(pkt_time.getFS()) * 1e-6;
++
++   cxl::TraceRequest req;
++   req.timestampNs = static_cast<uint64_t>(arrival_ns);
++   req.op          = (access_type == DramCntlrInterface::WRITE) ? cxl::TraceOp::WRITE : cxl::TraceOp::READ;
++   req.addr        = static_cast<uint64_t>(address) & ~static_cast<uint64_t>(63);   // 64 B line
++   req.sizeBytes   = static_cast<uint32_t>(pkt_size);
++   req.requesterId = static_cast<uint32_t>(requester);
++
++   cxl::RequestResult res;
++   {
++      CXRayShared& s = shared();
++      std::lock_guard<std::mutex> guard(s.lock);
++      res = s.ctrl->processRequest(req, arrival_ns);
++      s.requests++;
++   }
++
++   // CXRay latencies (ns, double) back to SubsecondTime at femtosecond precision.
++   SubsecondTime access_latency = SubsecondTime::FS() *
++         static_cast<uint64_t>(std::llround(res.latencyNs * 1e6));
++   SubsecondTime credit_stall = SubsecondTime::FS() *
++         static_cast<uint64_t>(std::llround(res.creditStallNs * 1e6));
++
++   perf->updateTime(pkt_time);
++   perf->updateTime(pkt_time + credit_stall, ShmemPerf::DRAM_QUEUE);
++   perf->updateTime(pkt_time + access_latency, ShmemPerf::DRAM_DEVICE);
++
++   m_num_accesses++;
++   m_total_access_latency += access_latency;
++   m_total_queueing_delay += credit_stall;
++
++   return access_latency;
++}
+diff --git a/common/performance_model/dram_perf_model_cxray.h b/common/performance_model/dram_perf_model_cxray.h
+new file mode 100644
+index 0000000..d6fe7d1
+--- /dev/null
++++ b/common/performance_model/dram_perf_model_cxray.h
+@@ -0,0 +1,44 @@
++#ifndef __DRAM_PERF_MODEL_CXRAY_H__
++#define __DRAM_PERF_MODEL_CXRAY_H__
++
++// DramPerfModelCXRay — Sniper DRAM performance model that hands every memory access to the
++// CXRay CXL memory simulator (libcxray).  The whole simulated memory is one CXL device: each
++// LLC miss becomes a cxl::TraceRequest, CXRay returns the end-to-end CXL latency (host
++// overhead + link + device + DRAM), and Sniper charges it on top of its cache hierarchy.
++//
++// Select with   perf_model/dram/type = cxray
++// Configure     perf_model/dram/cxray_config = <path to a CXRay .cfg, e.g. configs/cxl_3.1.cfg>
++//
++// One cxl::CXLMemController is shared by all DRAM controllers of the process (Sniper creates one
++// DramPerfModel per controller) and every call is serialized through a mutex, because CXRay's
++// fast mode is single-threaded and assumes arrivals in non-decreasing simulated time.  Sniper's
++// barrier keeps cores within one quantum of each other (100 ns by default), so arrivals can be
++// out of order by at most that much; this is a modelling caveat, not a correctness problem.
++//
++// At simulation end (HOOK_SIM_END) CXRay's printStats() goes to stdout (sim.stdout) and
++// writeStatsJson() writes <output_dir>/<run_tag>_stats.json as set in the CXRay .cfg.
++
++#include "dram_perf_model.h"
++#include "fixed_types.h"
++#include "subsecond_time.h"
++#include "dram_cntlr_interface.h"
++
++class ShmemPerf;
++
++class DramPerfModelCXRay : public DramPerfModel
++{
++   private:
++      core_id_t m_core_id;
++      SubsecondTime m_total_access_latency;    // dram.total-access-latency (what sim.out reports)
++      SubsecondTime m_total_queueing_delay;    // dram.total-queueing-delay = CXRay credit stalls
++
++   public:
++      DramPerfModelCXRay(core_id_t core_id, UInt32 cache_block_size, const String& suffix = "");
++      ~DramPerfModelCXRay();
++
++      SubsecondTime getAccessLatency(SubsecondTime pkt_time, UInt64 pkt_size, core_id_t requester,
++                                     IntPtr address, DramCntlrInterface::access_t access_type,
++                                     ShmemPerf *perf, bool is_metadata) override;
++};
++
++#endif /* __DRAM_PERF_MODEL_CXRAY_H__ */
